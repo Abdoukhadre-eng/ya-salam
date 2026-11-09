@@ -7,8 +7,8 @@
 <meta name="description" content="Témoignages vidéo sur Seydina Al Hassan Salam">
 <meta name="theme-color" content="#0f3d2e">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -187,7 +187,7 @@ function analyser(lien){
   if(/vm\.tiktok\.com|vt\.tiktok\.com/.test(lien))
     return {type:"tiktok-court",nom:"TikTok",ouvrir:lien};
   if((m=lien.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)))
-    return {type:"youtube",nom:"YouTube",embed:`https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&rel=0`,ouvrir:lien,
+    return {type:"youtube",nom:"YouTube",embed:`https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&rel=0&playsinline=1&iv_load_policy=3`,ouvrir:lien,
             vignette:`https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`,vertical:/shorts\//.test(lien)};
   if((m=lien.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*id=)([\w-]+)/)))
     return {type:"drive",nom:"Drive",embed:`https://drive.google.com/file/d/${m[1]}/preview`,ouvrir:`https://drive.google.com/file/d/${m[1]}/view`,
@@ -238,7 +238,6 @@ function afficher(){
     return `<button class="carte" data-l="${esc(v.lien)}">
       <div class="vignette">
         ${img?`<img src="${esc(img)}" alt="" loading="lazy" onerror="this.remove()">`:""}
-        <span class="source">${a.nom}</span>
         <span class="fav ${favoris.has(v.lien)?"on":""}" data-fav="${esc(v.lien)}" role="button" aria-label="Favori">${ICON_COEUR}</span>
         <span class="lecture">${ICON_PLAY}</span>
       </div>
@@ -267,12 +266,12 @@ function ouvrir(v){
   // Lien de téléchargement : colonne « Téléchargement » (Drive ou .mp4) en priorité, sinon le lien lui-même s'il le permet
   const dl=v.fichier?(analyser(v.fichier).telecharger||v.fichier):a.telecharger;
   if(dl) html+=`<a class="action principal" href="${esc(dl)}" download target="_blank" rel="noopener">${svgDl}Télécharger</a>`;
-  if(!dl||a.type==="youtube"||a.type.startsWith("tiktok")) html+=`<a class="action ${dl?"second":"principal"}" href="${esc(a.ouvrir)}" target="_blank" rel="noopener">${svgExt}Ouvrir sur ${a.nom}</a>`;
+  if(!dl||a.type==="youtube"||a.type.startsWith("tiktok")) html+=`<a class="action ${dl?"second":"principal"}" href="${esc(a.ouvrir)}" target="_blank" rel="noopener">${svgExt}Ouvrir la vidéo</a>`;
   html+=`<button class="action second" id="partager">${svgPart}Partager</button>`;
   $("lActions").innerHTML=html;
-  $("lNote").textContent=dl?"":a.type==="youtube"?"Pour la garder sur le téléphone : ouvrez-la dans YouTube puis appuyez sur « Télécharger » sous la vidéo (si votre compte YouTube le permet).":a.type.startsWith("tiktok")?"Pour télécharger une vidéo TikTok, ouvrez-la dans TikTok puis « Partager → Enregistrer la vidéo ».":"";
+  $("lNote").textContent=dl?"":a.type==="youtube"?"Pour la garder sur le téléphone : appuyez sur « Ouvrir la vidéo », puis sur « Télécharger » sous la vidéo.":a.type.startsWith("tiktok")?"Pour la garder sur le téléphone : appuyez sur « Ouvrir la vidéo », puis « Partager → Enregistrer la vidéo ».":"";
   $("partager").onclick=()=>{
-    const d={title:v.titre,text:`${v.titre} — Ya Salam`,url:v.lien};
+    const d={title:v.titre,text:`${v.titre} — à regarder sur Ya Salam`,url:location.origin+location.pathname};
     if(navigator.share) navigator.share(d).catch(()=>{});
     else{navigator.clipboard?.writeText(v.lien);alert("Lien copié");}
   };
