@@ -1,5 +1,5 @@
-const CACHE = "ya-salam-v12";
-const FICHIERS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "seydina.jpg"];
+const CACHE = "ya-salam-v13";
+const FICHIERS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "seydina.jpg", "logo.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHIERS))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE).map(n => caches.delete(n)))));

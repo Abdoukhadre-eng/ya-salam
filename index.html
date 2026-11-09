@@ -26,6 +26,7 @@ button{font:inherit;cursor:pointer}
 /* En-tête */
 header{background:var(--vert);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 18px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .haut{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
+.logo-img{height:50px;width:auto;flex:none;background:#fff;border-radius:12px;padding:4px 6px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .logo{width:42px;height:42px;border-radius:50%;border:2px solid var(--or);display:grid;place-items:center;flex:none}
 .logo svg{width:16px;fill:var(--or);margin-left:3px}
 .titre h1{margin:0;font-family:Amiri,serif;font-size:26px;letter-spacing:.5px;color:var(--or);line-height:1}
@@ -174,7 +175,7 @@ footer b{color:var(--texte)}
 
 <header>
   <div class="haut">
-    <div class="logo"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+    <img class="logo-img" src="logo.png" alt="Ya Salamou TV">
     <div class="titre">
       <h1>Ya Salam</h1>
       <p>Témoignages sur Seydina Al Hassan Salam</p>
