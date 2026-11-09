@@ -1,0 +1,15 @@
+{
+  "name": "Ya Salam",
+  "short_name": "Ya Salam",
+  "description": "Témoignages vidéo sur Seydina Al Hassan Salam",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f3d2e",
+  "theme_color": "#0f3d2e",
+  "lang": "fr",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

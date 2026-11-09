@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ya Salam</title>
+<meta name="description" content="Témoignages vidéo sur Seydina Al Hassan Salam">
+<meta name="theme-color" content="#0f3d2e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vert:#0f3d2e; --vert2:#175c45; --or:#d4af37; --or-pale:#f3e6b8;
+  --fond:#f7f3ea; --carte:#ffffff; --texte:#1d2621; --doux:#5f6b64; --bord:#e4ddcc;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --fond:#0c1712; --carte:#13231c; --texte:#ecefe9; --doux:#9fb0a6; --bord:#24382e; --or-pale:#3a3214; }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--fond);color:var(--texte);min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer}
+
+/* En-tête */
+header{background:var(--vert);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 18px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.haut{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
+.logo{width:42px;height:42px;border-radius:50%;border:2px solid var(--or);display:grid;place-items:center;flex:none}
+.logo svg{width:16px;fill:var(--or);margin-left:3px}
+.titre h1{margin:0;font-family:Amiri,serif;font-size:26px;letter-spacing:.5px;color:var(--or);line-height:1}
+.titre p{margin:3px 0 0;font-size:12.5px;opacity:.8}
+#btnInstaller{margin-left:auto;background:var(--or);color:var(--vert);border:0;border-radius:20px;padding:8px 14px;font-weight:600;font-size:13px;display:none}
+.recherche{max-width:1100px;margin:14px auto 0;position:relative}
+.recherche input{width:100%;border:0;border-radius:12px;padding:12px 14px 12px 40px;font:inherit;font-size:15px;background:rgba(255,255,255,.12);color:#fff;outline:none}
+.recherche input::placeholder{color:rgba(255,255,255,.65)}
+.recherche input:focus{background:rgba(255,255,255,.2)}
+.recherche svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2}
+
+/* Filtres */
+.filtres{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 4px;max-width:1132px;margin:0 auto;scrollbar-width:none}
+.filtres::-webkit-scrollbar{display:none}
+.puce{flex:none;border:1px solid var(--bord);background:var(--carte);color:var(--texte);border-radius:20px;padding:7px 14px;font-size:13.5px;font-weight:500}
+.puce.actif{background:var(--vert);border-color:var(--vert);color:#fff}
+
+main{max-width:1132px;margin:0 auto;padding:8px 16px 40px}
+.compte{font-size:13px;color:var(--doux);margin:10px 0 12px}
+
+/* Grille de vidéos */
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0;color:inherit;transition:transform .15s}
+.carte:active{transform:scale(.98)}
+.vignette{aspect-ratio:16/10;background:linear-gradient(135deg,var(--vert),var(--vert2));position:relative;display:grid;place-items:center;overflow:hidden}
+.vignette img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vignette .lecture{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.45);border:2px solid var(--or);display:grid;place-items:center;position:relative}
+.vignette .lecture svg{width:18px;fill:var(--or);margin-left:4px}
+.source{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
+.fav{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.4);border:0;display:grid;place-items:center}
+.fav svg{width:17px;stroke:#fff;stroke-width:2;fill:none}
+.fav.on svg{fill:var(--or);stroke:var(--or)}
+.infos{padding:12px 13px 14px}
+.infos h3{margin:0 0 5px;font-size:15px;line-height:1.35;font-weight:600}
+.meta{font-size:12.5px;color:var(--doux);display:flex;flex-wrap:wrap;gap:4px 10px}
+.etiquette{display:inline-block;margin-top:8px;background:var(--or-pale);color:var(--texte);font-size:11.5px;padding:3px 9px;border-radius:6px;font-weight:500}
+
+.vide{text-align:center;color:var(--doux);padding:60px 20px}
+.vide b{display:block;color:var(--texte);font-size:16px;margin-bottom:6px}
+
+/* Lecteur */
+.lecteur{position:fixed;inset:0;background:#000;z-index:50;display:none;flex-direction:column}
+.lecteur.ouvert{display:flex}
+.lecteur-haut{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;color:#fff}
+.lecteur-haut h2{margin:0;font-size:15px;font-weight:600;flex:1;line-height:1.3}
+.rond{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.12);display:grid;place-items:center;flex:none}
+.rond svg{width:20px;stroke:#fff;stroke-width:2;fill:none}
+.ecran{flex:1;display:grid;place-items:center;padding:0 10px;min-height:0}
+.ecran iframe,.ecran video{width:100%;max-width:900px;aspect-ratio:16/9;max-height:100%;border:0;border-radius:10px;background:#000}
+.ecran.vertical iframe{width:auto;height:100%;max-height:78vh;aspect-ratio:9/16;max-width:100%}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
+.action{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:24px;padding:11px 18px;font-weight:600;font-size:14px;text-decoration:none}
+.action svg{width:18px;stroke:currentColor;stroke-width:2;fill:none}
+.action.principal{background:var(--or);color:var(--vert)}
+.action.second{background:rgba(255,255,255,.14);color:#fff}
+.note{color:rgba(255,255,255,.6);font-size:12px;text-align:center;padding:0 20px 6px}
+
+footer{text-align:center;font-size:12.5px;color:var(--doux);padding:24px 16px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--bord)}
+footer b{color:var(--texte)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="haut">
+    <div class="logo"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+    <div class="titre">
+      <h1>Ya Salam</h1>
+      <p>Témoignages sur Seydina Al Hassan Salam</p>
+    </div>
+    <button id="btnInstaller">Installer</button>
+  </div>
+  <div class="recherche">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <input id="q" type="search" placeholder="Rechercher un témoignage, un nom…" autocomplete="off">
+  </div>
+</header>
+
+<nav class="filtres" id="filtres"></nav>
+
+<main>
+  <div class="compte" id="compte">Chargement…</div>
+  <div class="grille" id="grille"></div>
+</main>
+
+<footer>
+  Conçu et développé par <b>Abdoukhadre Boye</b>
+</footer>
+
+<!-- Lecteur vidéo -->
+<div class="lecteur" id="lecteur" role="dialog" aria-modal="true">
+  <div class="lecteur-haut">
+    <button class="rond" id="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="lTitre"></h2>
+  </div>
+  <div class="ecran" id="ecran"></div>
+  <p class="note" id="lNote"></p>
+  <div class="actions" id="lActions"></div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURATION — à modifier une seule fois
+   Colle ici l'identifiant de ton Google Sheet (la partie entre
+   /d/ et /edit dans le lien). Le Sheet doit être partagé en
+   « Tous les utilisateurs disposant du lien : Lecteur ».
+   ============================================================ */
+const SHEET_ID = "1bYM2cu1L7_h9Y2sRzMx97CKPgn36M5P4S47Z_Jl93LA";
+const ONGLET   = "Videos";    // nom de l'onglet
+
+/* Vidéos d'exemple affichées tant que SHEET_ID est vide */
+const EXEMPLES = [
+  {titre:"Témoignage d'exemple — vidéo TikTok", temoin:"Nom du témoin", categorie:"Miracles", date:"2026-11-01", lien:"https://www.tiktok.com/@yasalamoutv/video/7300000000000000000"},
+  {titre:"Témoignage d'exemple — vidéo Google Drive", temoin:"Nom du témoin", categorie:"Vécu", date:"2026-10-20", lien:"https://drive.google.com/file/d/IDENTIFIANT_DU_FICHIER/view"},
+  {titre:"Témoignage d'exemple — vidéo YouTube", temoin:"Serigne Adama", categorie:"Enseignements", date:"2026-10-05", lien:"https://www.youtube.com/watch?v=VIDEO_ID"}
+];
+
+/* ---------- Lecture du Google Sheet ---------- */
+function parseCSV(txt){
+  const lignes=[]; let l=[], champ="", guill=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(guill){
+      if(c==='"'&&txt[i+1]==='"'){champ+='"';i++}
+      else if(c==='"') guill=false;
+      else champ+=c;
+    }else if(c==='"') guill=true;
+    else if(c===','){l.push(champ);champ=""}
+    else if(c==='\n'||c==='\r'){
+      if(c==='\r'&&txt[i+1]==='\n') i++;
+      l.push(champ);lignes.push(l);l=[];champ="";
+    }else champ+=c;
+  }
+  if(champ||l.length){l.push(champ);lignes.push(l)}
+  return lignes;
+}
+const norm=s=>(s||"").toString().normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
+
+async function chargerVideos(){
+  if(!SHEET_ID) return EXEMPLES;
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ONGLET)}`;
+  const rep=await fetch(url,{cache:"no-store"});
+  if(!rep.ok) throw new Error("Sheet inaccessible");
+  const rows=parseCSV(await rep.text()).filter(r=>r.some(x=>x.trim()));
+  const ent=rows.shift().map(norm);
+  const col=n=>ent.findIndex(h=>h.startsWith(n));
+  const iT=col("titre"),iW=col("temoin"),iC=col("categ"),iD=col("date"),iL=col("lien"),iV=col("vignette");
+  return rows.map(r=>({
+    titre:r[iT]||"", temoin:iW>=0?r[iW]:"", categorie:iC>=0?r[iC]:"",
+    date:iD>=0?r[iD]:"", lien:(r[iL]||"").trim(), vignette:iV>=0?r[iV]:""
+  })).filter(v=>v.lien);
+}
+
+/* ---------- Reconnaissance du type de lien ---------- */
+function analyser(lien){
+  let m;
+  if((m=lien.match(/tiktok\.com\/.*video\/(\d+)/)))
+    return {type:"tiktok",nom:"TikTok",embed:`https://www.tiktok.com/player/v1/${m[1]}?music_info=0&description=0&rel=0`,ouvrir:lien,vertical:true};
+  if(/vm\.tiktok\.com|vt\.tiktok\.com/.test(lien))
+    return {type:"tiktok-court",nom:"TikTok",ouvrir:lien};
+  if((m=lien.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)))
+    return {type:"youtube",nom:"YouTube",embed:`https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&rel=0`,ouvrir:lien,
+            vignette:`https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`,vertical:/shorts\//.test(lien)};
+  if((m=lien.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*id=)([\w-]+)/)))
+    return {type:"drive",nom:"Drive",embed:`https://drive.google.com/file/d/${m[1]}/preview`,ouvrir:`https://drive.google.com/file/d/${m[1]}/view`,
+            telecharger:`https://drive.google.com/uc?export=download&id=${m[1]}`,
+            vignette:`https://drive.google.com/thumbnail?id=${m[1]}&sz=w640`};
+  if(/\.(mp4|webm|mov|m4v)(\?|$)/i.test(lien))
+    return {type:"fichier",nom:"Vidéo",fichier:lien,ouvrir:lien,telecharger:lien};
+  return {type:"autre",nom:"Lien",ouvrir:lien};
+}
+
+/* ---------- État ---------- */
+let videos=[], filtre="Toutes", recherche="";
+const lire=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const ecrire=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let favoris=new Set(lire("ys_favoris")||[]);
+
+const $=id=>document.getElementById(id);
+const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ICON_PLAY='<svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg>';
+const ICON_COEUR='<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 3 4.5 7 4.5c2.2 0 3.6 1.3 5 3 1.4-1.7 2.8-3 5-3 4 0 6.2 4.1 4.5 7.5C19 16.5 12 21 12 21z"/></svg>';
+
+function dateFR(d){
+  if(!d) return "";
+  const x=new Date(d); if(isNaN(x)) return d;
+  return x.toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
+}
+
+function afficherFiltres(){
+  const cats=[...new Set(videos.map(v=>v.categorie).filter(Boolean))].sort();
+  const liste=["Toutes","Favoris",...cats];
+  $("filtres").innerHTML=liste.map(c=>`<button class="puce ${c===filtre?"actif":""}" data-c="${esc(c)}">${c==="Favoris"?"♥ Favoris":esc(c)}</button>`).join("");
+}
+
+function afficher(){
+  const q=norm(recherche);
+  let liste=videos.filter(v=>{
+    if(filtre==="Favoris"&&!favoris.has(v.lien)) return false;
+    if(filtre!=="Toutes"&&filtre!=="Favoris"&&v.categorie!==filtre) return false;
+    return !q||norm(v.titre+" "+v.temoin+" "+v.categorie).includes(q);
+  });
+  $("compte").textContent=`${liste.length} vidéo${liste.length>1?"s":""}`+(SHEET_ID?"":" · mode exemple");
+  if(!liste.length){
+    $("grille").innerHTML=`<div class="vide" style="grid-column:1/-1"><b>${filtre==="Favoris"?"Aucun favori pour l'instant":"Aucune vidéo trouvée"}</b>${filtre==="Favoris"?"Touchez le cœur d'une vidéo pour la retrouver ici.":"Essayez un autre mot."}</div>`;
+    return;
+  }
+  $("grille").innerHTML=liste.map(v=>{
+    const a=analyser(v.lien), img=v.vignette||a.vignette;
+    return `<button class="carte" data-l="${esc(v.lien)}">
+      <div class="vignette">
+        ${img?`<img src="${esc(img)}" alt="" loading="lazy" onerror="this.remove()">`:""}
+        <span class="source">${a.nom}</span>
+        <span class="fav ${favoris.has(v.lien)?"on":""}" data-fav="${esc(v.lien)}" role="button" aria-label="Favori">${ICON_COEUR}</span>
+        <span class="lecture">${ICON_PLAY}</span>
+      </div>
+      <div class="infos">
+        <h3>${esc(v.titre)}</h3>
+        <div class="meta">${v.temoin?`<span>${esc(v.temoin)}</span>`:""}${v.date?`<span>${dateFR(v.date)}</span>`:""}</div>
+        ${v.categorie?`<span class="etiquette">${esc(v.categorie)}</span>`:""}
+      </div>
+    </button>`;
+  }).join("");
+}
+
+/* ---------- Lecteur ---------- */
+function ouvrir(v){
+  const a=analyser(v.lien), ecran=$("ecran");
+  $("lTitre").textContent=v.titre;
+  ecran.className="ecran"+(a.vertical?" vertical":"");
+  if(a.embed) ecran.innerHTML=`<iframe src="${a.embed}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  else if(a.fichier) ecran.innerHTML=`<video src="${esc(a.fichier)}" controls autoplay playsinline></video>`;
+  else ecran.innerHTML=`<p style="color:#fff;text-align:center">Cette vidéo s'ouvre dans l'application d'origine.</p>`;
+
+  const svgDl='<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+  const svgPart='<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>';
+  const svgExt='<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>';
+  let html="";
+  if(a.telecharger) html+=`<a class="action principal" href="${esc(a.telecharger)}" download target="_blank" rel="noopener">${svgDl}Télécharger</a>`;
+  else html+=`<a class="action principal" href="${esc(a.ouvrir)}" target="_blank" rel="noopener">${svgExt}Ouvrir sur ${a.nom}</a>`;
+  html+=`<button class="action second" id="partager">${svgPart}Partager</button>`;
+  $("lActions").innerHTML=html;
+  $("lNote").textContent=a.type.startsWith("tiktok")?"Pour télécharger une vidéo TikTok, ouvrez-la dans TikTok puis « Partager → Enregistrer la vidéo ».":"";
+  $("partager").onclick=()=>{
+    const d={title:v.titre,text:`${v.titre} — Ya Salam`,url:v.lien};
+    if(navigator.share) navigator.share(d).catch(()=>{});
+    else{navigator.clipboard?.writeText(v.lien);alert("Lien copié");}
+  };
+  $("lecteur").classList.add("ouvert");
+  history.pushState({lecteur:1},"");
+}
+function fermer(){
+  $("lecteur").classList.remove("ouvert");
+  $("ecran").innerHTML="";
+}
+$("fermer").onclick=()=>history.back();
+addEventListener("popstate",()=>{ if($("lecteur").classList.contains("ouvert")) fermer(); });
+
+/* ---------- Événements ---------- */
+$("grille").addEventListener("click",e=>{
+  const f=e.target.closest("[data-fav]");
+  if(f){
+    e.stopPropagation(); const l=f.dataset.fav;
+    favoris.has(l)?favoris.delete(l):favoris.add(l);
+    ecrire("ys_favoris",[...favoris]); afficher(); return;
+  }
+  const c=e.target.closest(".carte");
+  if(c) ouvrir(videos.find(v=>v.lien===c.dataset.l));
+});
+$("filtres").addEventListener("click",e=>{
+  const b=e.target.closest(".puce"); if(!b) return;
+  filtre=b.dataset.c; afficherFiltres(); afficher();
+});
+$("q").addEventListener("input",e=>{recherche=e.target.value;afficher();});
+
+/* ---------- Installation (PWA) ---------- */
+let invite=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();invite=e;$("btnInstaller").style.display="block";});
+$("btnInstaller").onclick=async()=>{ if(!invite) return; invite.prompt(); await invite.userChoice; invite=null; $("btnInstaller").style.display="none"; };
+if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+/* ---------- Démarrage ---------- */
+(async()=>{
+  try{
+    videos=await chargerVideos();
+    videos.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));
+    ecrire("ys_cache",videos);
+  }catch(err){
+    videos=lire("ys_cache")||[];
+    $("compte").textContent="Hors connexion — liste enregistrée";
+  }
+  afficherFiltres(); afficher();
+})();
+</script>
+</body>
+</html>
