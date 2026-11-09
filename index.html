@@ -172,10 +172,10 @@ async function chargerVideos(){
   const rows=parseCSV(await rep.text()).filter(r=>r.some(x=>x.trim()));
   const ent=rows.shift().map(norm);
   const col=n=>ent.findIndex(h=>h.startsWith(n));
-  const iT=col("titre"),iW=col("temoin"),iC=col("categ"),iD=col("date"),iL=col("lien"),iV=col("vignette");
+  const iT=col("titre"),iW=col("temoin"),iC=col("categ"),iD=col("date"),iL=col("lien"),iV=col("vignette"),iF=col("telecharg");
   return rows.map(r=>({
     titre:r[iT]||"", temoin:iW>=0?r[iW]:"", categorie:iC>=0?r[iC]:"",
-    date:iD>=0?r[iD]:"", lien:(r[iL]||"").trim(), vignette:iV>=0?r[iV]:""
+    date:iD>=0?r[iD]:"", lien:(r[iL]||"").trim(), vignette:iV>=0?r[iV]:"", fichier:iF>=0?(r[iF]||"").trim():""
   })).filter(v=>v.lien);
 }
 
@@ -264,11 +264,13 @@ function ouvrir(v){
   const svgPart='<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>';
   const svgExt='<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>';
   let html="";
-  if(a.telecharger) html+=`<a class="action principal" href="${esc(a.telecharger)}" download target="_blank" rel="noopener">${svgDl}Télécharger</a>`;
-  else html+=`<a class="action principal" href="${esc(a.ouvrir)}" target="_blank" rel="noopener">${svgExt}Ouvrir sur ${a.nom}</a>`;
+  // Lien de téléchargement : colonne « Téléchargement » (Drive ou .mp4) en priorité, sinon le lien lui-même s'il le permet
+  const dl=v.fichier?(analyser(v.fichier).telecharger||v.fichier):a.telecharger;
+  if(dl) html+=`<a class="action principal" href="${esc(dl)}" download target="_blank" rel="noopener">${svgDl}Télécharger</a>`;
+  if(!dl||a.type==="youtube"||a.type.startsWith("tiktok")) html+=`<a class="action ${dl?"second":"principal"}" href="${esc(a.ouvrir)}" target="_blank" rel="noopener">${svgExt}Ouvrir sur ${a.nom}</a>`;
   html+=`<button class="action second" id="partager">${svgPart}Partager</button>`;
   $("lActions").innerHTML=html;
-  $("lNote").textContent=a.type.startsWith("tiktok")?"Pour télécharger une vidéo TikTok, ouvrez-la dans TikTok puis « Partager → Enregistrer la vidéo ».":"";
+  $("lNote").textContent=dl?"":a.type==="youtube"?"Pour la garder sur le téléphone : ouvrez-la dans YouTube puis appuyez sur « Télécharger » sous la vidéo (si votre compte YouTube le permet).":a.type.startsWith("tiktok")?"Pour télécharger une vidéo TikTok, ouvrez-la dans TikTok puis « Partager → Enregistrer la vidéo ».":"";
   $("partager").onclick=()=>{
     const d={title:v.titre,text:`${v.titre} — Ya Salam`,url:v.lien};
     if(navigator.share) navigator.share(d).catch(()=>{});
