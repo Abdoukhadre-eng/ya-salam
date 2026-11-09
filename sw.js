@@ -1,4 +1,4 @@
-const CACHE = "ya-salam-v5";
+const CACHE = "ya-salam-v4";
 const FICHIERS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHIERS))); self.skipWaiting(); });
 self.addEventListener("activate", e => {

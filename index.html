@@ -83,17 +83,6 @@ main{max-width:1132px;margin:0 auto;padding:8px 16px 40px}
 .action.second{background:rgba(255,255,255,.14);color:#fff}
 .note{color:rgba(255,255,255,.6);font-size:12px;text-align:center;padding:0 20px 6px}
 
-.modes{display:flex;gap:6px;justify-content:center;padding:0 14px 12px}
-.mode{border:0;border-radius:20px;padding:8px 16px;font-weight:600;font-size:13.5px;background:rgba(255,255,255,.12);color:#fff;display:inline-flex;align-items:center;gap:6px}
-.mode svg{width:16px;stroke:currentColor;stroke-width:2;fill:none}
-.mode.actif{background:var(--or);color:var(--vert)}
-.audio-vue{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:18px}
-.pochette{width:min(78vw,320px);aspect-ratio:1;border-radius:18px;background:linear-gradient(135deg,var(--vert),var(--vert2));overflow:hidden;display:grid;place-items:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-.pochette img{width:100%;height:100%;object-fit:cover}
-.pochette svg{width:30%;stroke:var(--or);stroke-width:1.6;fill:none}
-.audio-vue audio{width:100%}
-.audio-vue p{color:rgba(255,255,255,.75);margin:0;font-size:13px;text-align:center}
-.etiquette.audio{background:var(--vert);color:#fff;margin-left:4px}
 footer{text-align:center;font-size:12.5px;color:var(--doux);padding:24px 16px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--bord)}
 footer b{color:var(--texte)}
 </style>
@@ -132,7 +121,6 @@ footer b{color:var(--texte)}
     <button class="rond" id="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2 id="lTitre"></h2>
   </div>
-  <div class="modes" id="modes"></div>
   <div class="ecran" id="ecran"></div>
   <p class="note" id="lNote"></p>
   <div class="actions" id="lActions"></div>
@@ -184,12 +172,11 @@ async function chargerVideos(){
   const rows=parseCSV(await rep.text()).filter(r=>r.some(x=>x.trim()));
   const ent=rows.shift().map(norm);
   const col=n=>ent.findIndex(h=>h.startsWith(n));
-  const iT=col("titre"),iW=col("temoin"),iC=col("categ"),iD=col("date"),iL=col("lien"),iV=col("vignette"),iF=col("telecharg"),iA=col("audio");
+  const iT=col("titre"),iW=col("temoin"),iC=col("categ"),iD=col("date"),iL=col("lien"),iV=col("vignette"),iF=col("telecharg");
   return rows.map(r=>({
     titre:r[iT]||"", temoin:iW>=0?r[iW]:"", categorie:iC>=0?r[iC]:"",
-    date:iD>=0?r[iD]:"", lien:(r[iL]||"").trim(), vignette:iV>=0?r[iV]:"", fichier:iF>=0?(r[iF]||"").trim():"",
-    audio:iA>=0?(r[iA]||"").trim():""
-  })).filter(v=>v.lien||v.audio).map(v=>({...v,cle:v.lien||v.audio}));
+    date:iD>=0?r[iD]:"", lien:(r[iL]||"").trim(), vignette:iV>=0?r[iV]:"", fichier:iF>=0?(r[iF]||"").trim():""
+  })).filter(v=>v.lien);
 }
 
 /* ---------- Reconnaissance du type de lien ---------- */
@@ -211,12 +198,6 @@ function analyser(lien){
   return {type:"autre",nom:"Lien",ouvrir:lien};
 }
 
-/* Lien audio jouable / téléchargeable (Drive ou fichier .mp3, .m4a…) */
-function lienAudio(l){
-  const m=l.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*id=)([\w-]+)/);
-  return m?`https://drive.google.com/uc?export=download&id=${m[1]}`:l;
-}
-
 /* ---------- État ---------- */
 let videos=[], filtre="Toutes", recherche="";
 const lire=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
@@ -226,7 +207,6 @@ let favoris=new Set(lire("ys_favoris")||[]);
 const $=id=>document.getElementById(id);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ICON_PLAY='<svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg>';
-const ICON_CASQUE='<svg viewBox="0 0 24 24" style="width:22px;fill:none;stroke:var(--or);stroke-width:2;margin:0"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="5" height="7" rx="1.5"/><rect x="16" y="14" width="5" height="7" rx="1.5"/></svg>';
 const ICON_COEUR='<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 3 4.5 7 4.5c2.2 0 3.6 1.3 5 3 1.4-1.7 2.8-3 5-3 4 0 6.2 4.1 4.5 7.5C19 16.5 12 21 12 21z"/></svg>';
 
 function dateFR(d){
@@ -237,50 +217,43 @@ function dateFR(d){
 
 function afficherFiltres(){
   const cats=[...new Set(videos.map(v=>v.categorie).filter(Boolean))].sort();
-  const liste=["Toutes","Favoris",...(videos.some(v=>v.audio)?["Audios"]:[]),...cats];
-  $("filtres").innerHTML=liste.map(c=>`<button class="puce ${c===filtre?"actif":""}" data-c="${esc(c)}">${c==="Favoris"?"♥ Favoris":c==="Audios"?"🎧 Audios":esc(c)}</button>`).join("");
+  const liste=["Toutes","Favoris",...cats];
+  $("filtres").innerHTML=liste.map(c=>`<button class="puce ${c===filtre?"actif":""}" data-c="${esc(c)}">${c==="Favoris"?"♥ Favoris":esc(c)}</button>`).join("");
 }
 
 function afficher(){
   const q=norm(recherche);
   let liste=videos.filter(v=>{
-    if(filtre==="Favoris"&&!favoris.has(v.cle)) return false;
-    if(filtre==="Audios"&&!v.audio) return false;
-    if(!["Toutes","Favoris","Audios"].includes(filtre)&&v.categorie!==filtre) return false;
+    if(filtre==="Favoris"&&!favoris.has(v.lien)) return false;
+    if(filtre!=="Toutes"&&filtre!=="Favoris"&&v.categorie!==filtre) return false;
     return !q||norm(v.titre+" "+v.temoin+" "+v.categorie).includes(q);
   });
-  $("compte").textContent=`${liste.length} témoignage${liste.length>1?"s":""}`+(SHEET_ID?"":" · mode exemple");
+  $("compte").textContent=`${liste.length} vidéo${liste.length>1?"s":""}`+(SHEET_ID?"":" · mode exemple");
   if(!liste.length){
     $("grille").innerHTML=`<div class="vide" style="grid-column:1/-1"><b>${filtre==="Favoris"?"Aucun favori pour l'instant":"Aucune vidéo trouvée"}</b>${filtre==="Favoris"?"Touchez le cœur d'une vidéo pour la retrouver ici.":"Essayez un autre mot."}</div>`;
     return;
   }
   $("grille").innerHTML=liste.map(v=>{
     const a=analyser(v.lien), img=v.vignette||a.vignette;
-    return `<button class="carte" data-l="${esc(v.cle)}">
+    return `<button class="carte" data-l="${esc(v.lien)}">
       <div class="vignette">
         ${img?`<img src="${esc(img)}" alt="" loading="lazy" onerror="this.remove()">`:""}
-        <span class="fav ${favoris.has(v.cle)?"on":""}" data-fav="${esc(v.cle)}" role="button" aria-label="Favori">${ICON_COEUR}</span>
-        <span class="lecture">${v.lien?ICON_PLAY:ICON_CASQUE}</span>
+        <span class="fav ${favoris.has(v.lien)?"on":""}" data-fav="${esc(v.lien)}" role="button" aria-label="Favori">${ICON_COEUR}</span>
+        <span class="lecture">${ICON_PLAY}</span>
       </div>
       <div class="infos">
         <h3>${esc(v.titre)}</h3>
         <div class="meta">${v.temoin?`<span>${esc(v.temoin)}</span>`:""}${v.date?`<span>${dateFR(v.date)}</span>`:""}</div>
-        ${v.categorie?`<span class="etiquette">${esc(v.categorie)}</span>`:""}${v.audio?`<span class="etiquette audio">🎧 Audio</span>`:""}
+        ${v.categorie?`<span class="etiquette">${esc(v.categorie)}</span>`:""}
       </div>
     </button>`;
   }).join("");
 }
 
 /* ---------- Lecteur ---------- */
-const SVG_VID='<svg viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>';
-const SVG_AUD='<svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="5" height="7" rx="1.5"/><rect x="16" y="14" width="5" height="7" rx="1.5"/></svg>';
-
-function ouvrir(v, mode){
-  if(!$("lecteur").classList.contains("ouvert")) history.pushState({lecteur:1},"");
-  if(mode==="audio"&&v.audio) return ouvrirAudio(v);
+function ouvrir(v){
   const a=analyser(v.lien), ecran=$("ecran");
   $("lTitre").textContent=v.titre;
-  barreModes(v,"video");
   ecran.className="ecran"+(a.vertical?" vertical":"");
   if(a.embed) ecran.innerHTML=`<iframe src="${a.embed}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   else if(a.fichier) ecran.innerHTML=`<video src="${esc(a.fichier)}" controls autoplay playsinline></video>`;
@@ -303,41 +276,11 @@ function ouvrir(v, mode){
     else{navigator.clipboard?.writeText(v.lien);alert("Lien copié");}
   };
   $("lecteur").classList.add("ouvert");
-}
-
-function barreModes(v, actif){
-  if(!(v.lien&&v.audio)){ $("modes").innerHTML=""; return; }
-  $("modes").innerHTML=`<button class="mode ${actif==="video"?"actif":""}" data-m="video">${SVG_VID}Vidéo</button><button class="mode ${actif==="audio"?"actif":""}" data-m="audio">${SVG_AUD}Audio</button>`;
-  $("modes").onclick=e=>{const b=e.target.closest(".mode"); if(b&&b.dataset.m!==actif) ouvrir(v,b.dataset.m);};
-}
-
-function ouvrirAudio(v){
-  const src=lienAudio(v.audio), img=v.vignette||analyser(v.lien||"").vignette;
-  $("lTitre").textContent=v.titre;
-  barreModes(v,"audio");
-  const ecran=$("ecran"); ecran.className="ecran";
-  ecran.innerHTML=`<div class="audio-vue">
-    <div class="pochette">${img?`<img src="${esc(img)}" alt="">`:SVG_AUD}</div>
-    ${v.temoin?`<p>${esc(v.temoin)}</p>`:""}
-    <audio src="${esc(src)}" controls autoplay preload="metadata"></audio>
-    <p>L'écoute continue même écran éteint.</p>
-  </div>`;
-  if("mediaSession" in navigator){
-    try{ navigator.mediaSession.metadata=new MediaMetadata({title:v.titre,artist:v.temoin||"Ya Salam",album:"Ya Salam",artwork:img?[{src:img,sizes:"480x360"}]:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]}); }catch(e){}
-  }
-  const svgDl='<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
-  const svgPart='<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>';
-  $("lActions").innerHTML=`<a class="action principal" href="${esc(src)}" download target="_blank" rel="noopener">${svgDl}Télécharger l'audio</a><button class="action second" id="partager">${svgPart}Partager</button>`;
-  $("lNote").textContent="";
-  $("partager").onclick=()=>{
-    const d={title:v.titre,text:`${v.titre} — à écouter sur Ya Salam`,url:location.origin+location.pathname};
-    if(navigator.share) navigator.share(d).catch(()=>{}); else{navigator.clipboard?.writeText(location.href);alert("Lien copié");}
-  };
-  $("lecteur").classList.add("ouvert");
+  history.pushState({lecteur:1},"");
 }
 function fermer(){
   $("lecteur").classList.remove("ouvert");
-  $("ecran").innerHTML=""; $("modes").innerHTML="";
+  $("ecran").innerHTML="";
 }
 $("fermer").onclick=()=>history.back();
 addEventListener("popstate",()=>{ if($("lecteur").classList.contains("ouvert")) fermer(); });
@@ -351,7 +294,7 @@ $("grille").addEventListener("click",e=>{
     ecrire("ys_favoris",[...favoris]); afficher(); return;
   }
   const c=e.target.closest(".carte");
-  if(c){ const v=videos.find(x=>x.cle===c.dataset.l); ouvrir(v, filtre==="Audios"||!v.lien?"audio":"video"); }
+  if(c) ouvrir(videos.find(v=>v.lien===c.dataset.l));
 });
 $("filtres").addEventListener("click",e=>{
   const b=e.target.closest(".puce"); if(!b) return;
@@ -368,11 +311,11 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigat
 /* ---------- Démarrage ---------- */
 (async()=>{
   try{
-    videos=(await chargerVideos()).map(v=>({...v,cle:v.cle||v.lien||v.audio}));
+    videos=await chargerVideos();
     videos.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));
     ecrire("ys_cache",videos);
   }catch(err){
-    videos=(lire("ys_cache")||[]).map(v=>({...v,cle:v.cle||v.lien||v.audio}));
+    videos=lire("ys_cache")||[];
     $("compte").textContent="Hors connexion — liste enregistrée";
   }
   afficherFiltres(); afficher();
