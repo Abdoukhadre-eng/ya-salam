@@ -1,0 +1,19 @@
+{
+  "name": "Sopey Seydina Al Hassan Salam – Siège Saint-Louis",
+  "short_name": "Magal 2027",
+  "description": "Cotisations du Magal Seydina Al Hassan Salam, 34e édition 2027 à Diourbel – Siège Saint-Louis. Conçu et développé par Abdoukhadre Boye.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef6ef",
+  "theme_color": "#14532d",
+  "lang": "fr",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

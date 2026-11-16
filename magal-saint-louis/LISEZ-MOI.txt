@@ -1,0 +1,74 @@
+APPLICATION « SOPEY SEYDINA AL HASSAN SALAM – SIÈGE SAINT-LOUIS »
+Magal Seydina Al Hassan Salam · 34e édition 2027 à Diourbel
+Conçu et développé par Abdoukhadre Boye
+==================================================================
+
+Ce dossier contient l'application. On la met sur Internet (GitHub, gratuit),
+puis le site PWABuilder la transforme en fichier APK pour Android.
+
+Fichiers du dossier (il faut tous les envoyer sur GitHub) :
+  index.html, manifest.webmanifest, sw.js,
+  icon-192.png, icon-512.png, icon-maskable-192.png, icon-maskable-512.png,
+  apple-touch-icon.png
+
+------------------------------------------------------------------
+ÉTAPE 1 – Le lien /exec
+------------------------------------------------------------------
+Dans Apps Script (ta copie de la feuille, compte Gmail) :
+Déployer > Gérer les déploiements > copie le lien qui finit par /exec.
+
+------------------------------------------------------------------
+ÉTAPE 2 – Mettre le lien dans index.html
+------------------------------------------------------------------
+Ouvre index.html avec le Bloc-notes.
+Cherche :  COLLEZ_ICI_LE_LIEN_EXEC
+Remplace-le par ton lien /exec (garde les apostrophes ' ').
+Exemple :  const API='https://script.google.com/macros/s/AKfy.../exec';
+Enregistre.
+
+------------------------------------------------------------------
+ÉTAPE 3 – Mettre l'application sur GitHub (gratuit)
+------------------------------------------------------------------
+1. Va sur https://github.com et connecte-toi (ou crée un compte avec ton Gmail).
+2. Clique sur « + » en haut à droite > « New repository ».
+   Nom : magal-saint-louis   ·  coche « Public »  ·  clique « Create repository ».
+3. Clique sur « uploading an existing file ».
+   Glisse TOUS les fichiers du dossier (pas le dossier lui-même).
+   Clique « Commit changes ».
+4. Va dans « Settings » > « Pages ».
+   Branch : main  ·  dossier : / (root)  ·  « Save ».
+5. Attends 1 à 2 minutes. Ton lien sera :
+   https://abdoukhadre-eng.github.io/ya-salam/magal-saint-louis/
+   Ouvre-le sur ton téléphone pour vérifier.
+
+------------------------------------------------------------------
+ÉTAPE 4 – Fabriquer le fichier APK (gratuit)
+------------------------------------------------------------------
+1. Va sur https://www.pwabuilder.com
+2. Colle ton lien GitHub (étape 3) et clique « Start ».
+3. Clique « Package For Stores », puis « Android » > « Generate Package ».
+4. Télécharge le fichier .zip. Dedans tu trouves :
+   - un fichier .apk  -> c'est l'application à installer ;
+   - un fichier de clé (signing key) -> GARDE-LE bien, il sert pour les
+     futures mises à jour de l'APK.
+
+------------------------------------------------------------------
+ÉTAPE 5 – Installer sur les téléphones
+------------------------------------------------------------------
+Envoie le fichier .apk dans le groupe WhatsApp.
+Sur le téléphone : ouvrir le fichier > autoriser « installer des applications
+inconnues » si Android le demande > Installer.
+L'icône avec la photo de Seydina Al Hassan Salam apparaît sur l'écran.
+
+Code trésorier : 7777 (à changer dans la feuille : menu Magal 2027).
+
+------------------------------------------------------------------
+BON À SAVOIR
+------------------------------------------------------------------
+- Les données restent dans ta feuille Google Sheets : l'APK, le lien /exec et
+  le lien GitHub montrent tous les mêmes chiffres.
+- Sans Internet, l'application s'ouvre avec les derniers chiffres vus.
+- Si tu modifies Code.gs : Déployer > Gérer les déploiements > Modifier >
+  Nouvelle version (le lien /exec ne change pas, l'APK continue de marcher).
+- Si tu modifies index.html : renvoie-le sur GitHub. L'APK se met à jour tout
+  seul, pas besoin de le réinstaller.
