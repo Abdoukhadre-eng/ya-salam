@@ -1,5 +1,5 @@
 // Garde l'application sur le téléphone pour qu'elle s'ouvre même sans connexion.
-const CACHE = 'magal-sl-v1';
+const CACHE = 'magal-sl-v2';
 const FICHIERS = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHIERS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())); });

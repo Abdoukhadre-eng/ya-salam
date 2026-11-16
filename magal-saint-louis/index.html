@@ -348,7 +348,7 @@ try{TOKEN=localStorage.getItem('sl_tok')||''}catch(_){}
 function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2800)}
 function status(t){$('#status').textContent=t||'';$('#status').hidden=!t}
 // ===== LIEN DE L'APPLICATION WEB (Apps Script > Déployer > lien qui finit par /exec) =====
-const API='COLLEZ_ICI_LE_LIEN_EXEC';
+const API='https://script.google.com/macros/s/AKfycbxe0-HZzFrvWHlul9TwMCHYALZCtStRYUPFo85DmN91ljSYxoseMNOxrf1XBtAlu0Dk/exec';
 // =========================================================================================
 function gs(fn,...a){
   if(!(window.google&&google.script&&google.script.run)){
